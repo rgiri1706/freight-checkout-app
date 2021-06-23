@@ -33,7 +33,7 @@ class HomePage extends Component {
 
     searchFunction =(searchText)=>{
         let arr = this.state.list.filter((data)=> {
-            return data.price===parseInt(searchText)
+            return data.productName===searchText
         });
         this.setState({
             filterList: arr
