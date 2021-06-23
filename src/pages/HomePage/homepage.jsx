@@ -8,8 +8,11 @@ class HomePage extends Component {
     constructor(){
         super();
         this.state={
-            list: ''
+            list: '',
+            filterList: '',
+            searchText: ''
         };
+        this.handleChange = this.handleChange.bind(this);
     }
     componentDidMount(){
         const { listData , loadItem} = this.props;
@@ -17,21 +20,46 @@ class HomePage extends Component {
             fetch('https://run.mocky.io/v3/05e9651d-528e-4d7c-a60b-bae8f09684c6')
             .then(response=>response.json())
             .then(itemList=> this.setState({
-                list: itemList.products
+                list: itemList.products,
+                filterList: itemList.products,
             },()=>loadItem(this.state.list)));
         }else{
             this.setState({
-                list: listData
+                list: listData,
+                filterList: listData,
             });
         }
     }
+
+    searchFunction =(searchText)=>{
+        let arr = this.state.list.filter((data)=> {
+            return data.price===parseInt(searchText)
+        });
+        this.setState({
+            filterList: arr
+        });
+        if(searchText.length === 0){
+            this.setState({
+                filterList: this.state.list
+            });
+        }
+    }
+
+
+    handleChange(event){
+        this.setState({
+            searchText: event.target.value 
+        }, ()=> this.searchFunction(this.state.searchText));
+    }
+
     render(){
         return (
             <div>
                 <div className='collection-page'>
+                    <input type="text" onChange={this.handleChange} value={this.state.searchText} />
                     <div className='items'>
                         {
-                        this.state.list && this.state.list.map(item=> <CollectionItem key={item.productId} item={item} />)
+                        this.state.filterList && this.state.filterList.map(item=> <CollectionItem key={item.productId} item={item} />)
                         }
                     </div>
                 </div>
