@@ -4,6 +4,9 @@ import './homepage.styles.scss';
 import { loadItem } from '../../redux/cart/cart.actions';
 import CollectionItem from '../../components/collection-items/collection-item.component';
 
+let timer;
+let flag=true;
+
 class HomePage extends Component {
     constructor(){
         super();
@@ -32,8 +35,9 @@ class HomePage extends Component {
     }
 
     searchFunction =(searchText)=>{
+        console.log(searchText);
         let arr = this.state.list.filter((data)=> {
-            return data.productName===searchText
+            return data.productName.includes(searchText);
         });
         this.setState({
             filterList: arr
@@ -45,11 +49,27 @@ class HomePage extends Component {
         }
     }
 
+    //debounce function
+
+    betterFunction=(data)=>{
+        clearTimeout(timer);
+        timer = setTimeout(()=>this.searchFunction(data), 1000);
+    }
+
+    //throttle function
+    betterThrottleFunction=(data)=>{
+        if(flag){
+            this.searchFunction(data);
+            flag=false
+        }
+        setTimeout(()=> flag=true, 1000);
+    }
+
 
     handleChange(event){
         this.setState({
             searchText: event.target.value 
-        }, ()=> this.searchFunction(this.state.searchText));
+        },()=>this.betterFunction(this.state.searchText));
     }
 
     render(){
